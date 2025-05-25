@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>WhatsApp DP Setter</title>
+</head>
+<body>
+  <h2>WhatsApp DP Setter</h2>
+  <form id="dpForm" enctype="multipart/form-data">
+    <input type="text" name="number" placeholder="Enter WhatsApp number" required />
+    <input type="file" name="photo" accept="image/*" required />
+    <button type="submit">Upload & Get Pair Code</button>
+  </form>
+
+  <pre id="result"></pre>
+
+  <script>
+    const form = document.getElementById('dpForm');
+    const result = document.getElementById('result');
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      result.textContent = 'Processing...';
+
+      const formData = new FormData(form);
+
+      try {
+        const response = await fetch('/api/generate', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
+
+        if (data.code) {
+          result.textContent = `Pairing Code: ${data.code}\nUse this code in WhatsApp to link device.`;
+        } else if (data.error) {
+          result.textContent = 'Error: ' + data.error;
+        } else {
+          result.textContent = 'Unknown response';
+        }
+      } catch (err) {
+        result.textContent = 'Request failed: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
